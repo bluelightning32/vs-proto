@@ -1,0 +1,22 @@
+{
+  "version": "0.2.0",
+  "configurations": [{
+    "name": "Run VintageStory",
+    "type": "coreclr",
+    "request": "launch",
+    "preLaunchTask": "DllOnly (Debug)",
+    "program": "${env:VINTAGE_STORY}/Vintagestory",
+    "args": [
+      "--addModPath", "${workspaceFolder}/bin/Debug",
+      "--addOrigin", "${workspaceFolder}/resources/assets"
+    ],
+    "justMyCode": false,
+    "sourceFileMap": {
+      "c:\\Users\\Tyron\\Documents\\vintagestory\\game\\VintagestoryApi\\": "${env:VINTAGE_STORY}/source/vsapi/",
+      "c:\\Users\\Tyron\\Documents\\vintagestory\\game\\VintagestoryLib\\": "${env:VINTAGE_STORY}/source/vslib/",
+      "c:\\Users\\Tyron\\Documents\\vintagestory\\game\\VSSurvivalMod\\": "${env:VINTAGE_STORY}/source/vssurvivalmod/",
+      "c:\\Users\\Tyron\\Documents\\vintagestory\\game\\VSEssentials\\": "${env:VINTAGE_STORY}/source/vsessentialsmod/"
+    },
+    "requireExactSource": false
+  }]
+}

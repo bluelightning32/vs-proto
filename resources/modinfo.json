@@ -1,0 +1,14 @@
+{
+	"type": "code",
+	"name": "Dimensions Demo",
+	"modid": "lambda",
+	"version": "1.0.0",
+	
+	"description" : "Demo for the Mini Dimensions functionality.",
+	"website": "https://github.com/bluelightning32/vs-dimensions-demo",
+	"authors": [ "bluelightning32" ],
+	
+	"dependencies": {
+		"game": "1.19.8"
+	}
+}

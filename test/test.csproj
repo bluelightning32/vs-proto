@@ -1,0 +1,63 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.2" />
+    <PackageReference Include="MSTest.TestAdapter" Version="2.2.10" />
+    <PackageReference Include="MSTest.TestFramework" Version="2.2.10" />
+    <PackageReference Include="coverlet.collector" Version="3.1.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <Reference Include="VintagestoryAPI">
+      <HintPath>$(VINTAGE_STORY)/VintagestoryAPI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../dimensions.csproj">
+      <Targets>Build</Targets>
+    </ProjectReference>
+  </ItemGroup>
+
+  <!--
+    Copy test.runsettings config to the output directory and set its
+    ResourcesPath property to the path of the resources directory relative to
+    the test build directory. The test will use this to find and validate the
+    json files in the resources directory.
+  -->
+  <Target Name="testconfig" AfterTargets="Build" Inputs="test.runsettings" Outputs="$(OutputPath)test.runsettings">
+    <Copy
+      SourceFiles="test.runsettings"
+      DestinationFiles="$(OutputPath)test.runsettings"/>
+    <XmlPoke
+      XmlInputPath="$(OutputPath)test.runsettings"
+      Query="/RunSettings/TestRunParameters/Parameter[@name='ResourcesPath']/@value"
+      Value="$([System.IO.Path]::GetRelativePath('$(OutputPath)', '../resources'))"
+      />
+  </Target>
+
+  <!--
+    Add an empty target so that DllOnly builds just the main dll when run for
+    the solution. -->
+  <Target Name="DllOnly"/>
+
+  <Target Name="setproperties" BeforeTargets="VSTest">
+    <PropertyGroup>
+      <!--
+        This property references the OutputPath property. However, the
+        OutputPath property is only set after all of the top level properties in
+        this file are evaluated. So the RunSettingsFilePath must be set inside
+        of a target so that it is evaluated after OutputPath is set, and before
+        the test is run.
+      -->
+      <RunSettingsFilePath>$(OutputPath)test.runsettings</RunSettingsFilePath>
+    </PropertyGroup>
+  </Target>
+
+</Project>

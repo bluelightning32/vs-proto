@@ -1,0 +1,182 @@
+<!--
+  Set the default target to be the custom "Package" target. This way when
+  dotnet build is invoked as follows, it creates the zip file.
+    dotnet build -c Release
+
+  Without this attribute the default target would be "Build", which does not
+  create the zip file.
+
+  The build target can be overridden on the command line with the -target
+  option. For example, the following builds the "Build" target, which skips the
+  "Package" target:
+    dotnet build dimensions.csproj -target:build -c Debug
+
+  By default dotnet will build the sln instead of the csproj. Every custom
+  target gets lifted to the solution. However, the solution filters out the
+  default targets such as "Build". So this project adds a custom "DllOnly"
+  target that only runs the Build target. So the simplest way to only build
+  the dll without the zip is:
+    dotnet build -target:dllonly -c Debug
+-->
+<Project Sdk="Microsoft.NET.Sdk" DefaultTargets="Package">
+    <!-- The PropertyGroup element is required to set any property (a kind of
+         variable). -->
+    <PropertyGroup>
+        <!--
+            The property name is given as the element name, and the property
+            value is the element value. Any property name can be used. However,
+            the TargetFramework property has a special meaning. It controls
+            which framework version the dll is linked against.
+
+            https://learn.microsoft.com/en-us/dotnet/core/project-sdk/msbuild-props#targetframework
+        -->
+        <TargetFramework>net7.0</TargetFramework>
+        <DefaultItemExcludes>$(DefaultItemExcludes);test/**</DefaultItemExcludes>
+    </PropertyGroup>
+    
+    <!-- The ItemGroup element is required to set any item (a kind of
+         variable that holds a filename list). -->
+    <ItemGroup>
+        <!--
+            The item name is given as the element name. Files are added to the
+            item with the Include attribute. Child elements hold metadata for
+            the file.
+
+            Full syntax:
+            https://learn.microsoft.com/en-us/visualstudio/msbuild/item-element-msbuild?view=vs-2022
+
+            The Reference item has a special meaning. The compiler links the cs
+            files against the referenced assemblies. The private=false tells the
+            compiler not to copy the referenced assembly to the target folder,
+            and we don't want to package the standard Vintage Story dlls in the
+            mod zip file.
+
+            Full syntax:
+            https://learn.microsoft.com/en-us/visualstudio/msbuild/common-msbuild-project-items?view=vs-2022#reference
+
+            The $(name) syntax is used to dereference properties. Msbuild
+            imports all environmental variables as properties when it starts. So
+            $(VINTAGE_STORY) below is intended to access the environmental
+            variable named VINTAGE_STORY.
+        -->
+        <Reference Include="VintagestoryAPI">
+            <HintPath>$(VINTAGE_STORY)/VintagestoryAPI.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+
+        <!--
+            Store the list of files to package in a zip file in the @(Package)
+            item. "Package" is a custom item (not a standard item name). The
+            item value contains the files to copy. Each value should also have
+            the Dest metadata set (custom metadata name) to point to the folder
+            to copy the file to.
+
+            The $(IntermediateOutputPath) property refers to something like
+            "obj/Release/net7.0/". $(TargetName) is the name of the dll that's
+            getting built. $(TargetExt) is ".dll". These are listed at:
+            https://learn.microsoft.com/en-us/visualstudio/msbuild/common-msbuild-project-properties?view=vs-2022
+        -->
+        <Package Include="$(IntermediateOutputPath)$(TargetName)$(TargetExt)">
+            <Dest>$(TargetName)$(TargetExt)</Dest>
+        </Package>
+        <!--
+          Mark all files in the resources directory for packaging into the zip
+          file, except for .svg files, because Vintage Story would ignore them
+          and use the pngs even if they were copied. -->
+        <Package Include="resources/**" Exclude="**/*.svg">
+            <!--
+                The metadata expression is evaluated for each file matched
+                above. The %(RecursiveDir) holds the directory matched by "**"
+                above. The %(filename) and %(extension) hold the suffix of the
+                matched path. The entire expression ends up creating the matched
+                path, minus the resources/ prefix.
+
+                The RecursiveDir and the other item metadata is documented at:
+                https://learn.microsoft.com/en-us/visualstudio/msbuild/msbuild-well-known-item-metadata?view=vs-2022
+            -->
+            <Dest>%(RecursiveDir)/%(filename)%(extension)</Dest>
+        </Package>
+
+        <!--
+            Register the files that are copied to the temporary zip folder
+            and the final zip file in the FileWrites property. Without this,
+            "dotnet build -c Release" would not delete them.
+
+            The files must also be registered so that if a file is removed from
+            resources, the build system automatically removes it from the zip
+            temporary folder. Otherwise, if a resource was removed, it would
+            keep getting packaged into the zip file on every subsequent build.
+        -->
+        <FileWrites
+            Include="@(Package->'$(IntermediateOutputPath)/zip/%(Dest)')"/>
+        <FileWrites Include="$(OutputPath)$(TargetName).zip"/>
+        <!--
+          Generate a list of files that are currently in the zip output folder,
+          but should not be there anymore based on the current list of files to
+          copy. These are stale files that were copied from a previous build,
+          and the source file has since been deleted. Note that IncrementalClean
+          target will eventually delete these files, but this ItemGroup is
+          evaluated before that target runs, so it can see the stale files.
+        -->
+        <StaleFiles Include="$(IntermediateOutputPath)/zip/**"
+                    Exclude="@(Package->'$(IntermediateOutputPath)/zip/%(Dest)')"/>
+    </ItemGroup>
+
+    <!-- As described at the top of the file, create an alias to the "Build"
+         target that does not create the zip file. -->
+    <Target Name="DllOnly" DependsOnTargets="Build">
+        <!--
+            If -"-addModPath bin/Debug" is passed to Vintage Story, it will try
+            to load bin/Debug/net7.0 as a folder mod. However, this will only
+            work if the modinfo.json file is present in that directory along
+            with the dll file. So copy that file and the icon to the output
+            directory.
+
+            Instead of copying the assets, Vintage Story should access them
+            directly from the source directory by adding the -"-addOrigin
+            resources/assets" option. That way the assets can be edited directly
+            in the source directory while Vintage Story is running, then
+            reloaded with the ".reload textures", ".reload shapes", etc..
+            commands in the game.
+            -->
+        <ItemGroup>
+            <ModInfo Include="resources/mod*" Exclude="resources/*.svg"/>
+        </ItemGroup>
+        <Copy
+            SourceFiles="@(Modinfo)"
+            DestinationFolder="$(OutputPath)"
+            SkipUnchangedFiles="true"/>
+    </Target>
+
+    <!--
+      Note that .cs files inside the directory are automatically compiled and
+      included in the dll, as documented at:
+      https://learn.microsoft.com/en-us/dotnet/core/project-sdk/overview#default-includes-and-excludes
+    -->
+
+    <!--
+        Create a zip file for the mod. The Inputs attribute says to only run
+        this target if any of the files to store in the zip have changed, or if
+        the zip folder contains stale files that the IncrementalClean step will
+        delete (and thus the zip file needs to be regenerated without the stale
+        files).
+    -->
+    <Target Name="Package"
+            DependsOnTargets="Build"
+            Inputs="@(Package);@(StaleFiles)"
+            Outputs="$(OutputPath)$(TargetName).zip">
+        <!--
+            Copy the files to zip into a temporary directory. Use the
+            %(Dest) metadata property on each file as the path inside of the
+            temporary directory. Skip copying unchanged files to speed up
+            the build. -->
+        <Copy
+            SourceFiles="@(Package)"
+            DestinationFiles="@(Package->'$(IntermediateOutputPath)zip/%(Dest)')"
+            SkipUnchangedFiles="true"/>
+        <ZipDirectory DestinationFile="$(OutputPath)$(TargetName).zip"
+            SourceDirectory="$(IntermediateOutputPath)zip"
+            Overwrite="true" />
+    </Target>
+
+</Project>
