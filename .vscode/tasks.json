@@ -5,7 +5,7 @@
       "label": "Package (Debug)",
       "group": {
         "kind": "build",
-        "isDefault": true
+        "isDefault": false
       },
       "presentation": {
         "reveal": "silent"
@@ -14,13 +14,13 @@
       "type": "process",
       "command": "dotnet",
       "args": [
-        "build",
+        "publish",
         "-c",
         "Debug"
       ]
     },
     {
-      "label": "DllOnly (Debug)",
+      "label": "Package (Release)",
       "group": {
         "kind": "build",
         "isDefault": false
@@ -32,26 +32,20 @@
       "type": "process",
       "command": "dotnet",
       "args": [
-        "build",
-        "-c",
-        "Debug",
-        "-target:dllonly"
-      ]
-    },
-    {
-      "label": "Package (Release)",
-      "group": "build",
-      "presentation": {
-        "reveal": "silent"
-      },
-      "problemMatcher": "$msCompile",
-      "type": "process",
-      "command": "dotnet",
-      "args": [
-        "build",
+        "publish",
         "-c",
         "Release"
       ]
+    },
+    {
+      "type": "dotnet",
+      "task": "build",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": [],
+      "label": "dotnet: build"
     }
   ]
 }

@@ -1,0 +1,58 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <!-- The PropertyGroup element is required to set any property (a kind of
+         variable). -->
+    <PropertyGroup>
+        <!--
+            The property name is given as the element name, and the property
+            value is the element value. Any property name can be used. However,
+            the TargetFramework property has a special meaning. It controls
+            which framework version the dll is linked against.
+
+            https://learn.microsoft.com/en-us/dotnet/core/project-sdk/msbuild-props#targetframework
+        -->
+        <TargetFramework>net7.0</TargetFramework>
+        <!--
+            Generate an executable dll. Note that this still produces a dll file
+
+            https://learn.microsoft.com/en-us/visualstudio/msbuild/common-msbuild-project-properties
+        -->
+        <OutputType>Exe</OutputType>
+    </PropertyGroup>
+    
+    <!-- The ItemGroup element is required to set any item (a kind of
+         variable that holds a filename list). -->
+    <ItemGroup>
+        <!--
+            The item name is given as the element name. Files are added to the
+            item with the Include attribute. Child elements hold metadata for
+            the file.
+
+            Full syntax:
+            https://learn.microsoft.com/en-us/visualstudio/msbuild/item-element-msbuild?view=vs-2022
+
+            The Reference item has a special meaning. The compiler links the cs
+            files against the referenced assemblies. The private=false tells the
+            compiler not to copy the referenced assembly to the target folder,
+            and we don't want to package the standard Vintage Story dlls in the
+            mod zip file.
+
+            Full syntax:
+            https://learn.microsoft.com/en-us/visualstudio/msbuild/common-msbuild-project-items?view=vs-2022#reference
+
+            The $(name) syntax is used to dereference properties. Msbuild
+            imports all environmental variables as properties when it starts. So
+            $(VINTAGE_STORY) below is intended to access the environmental
+            variable named VINTAGE_STORY.
+        -->
+        <Reference Include="VintagestoryAPI">
+            <HintPath>$(VINTAGE_STORY)/VintagestoryAPI.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+    </ItemGroup>
+
+    <!--
+      Note that .cs files inside the directory are automatically compiled and
+      included in the dll, as documented at:
+      https://learn.microsoft.com/en-us/dotnet/core/project-sdk/overview#default-includes-and-excludes
+    -->
+</Project>
