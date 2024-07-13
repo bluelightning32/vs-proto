@@ -52,10 +52,14 @@
             <HintPath>$(VINTAGE_STORY)/VintagestoryLib.dll</HintPath>
             <Private>false</Private>
         </Reference>
-        <Reference Include="protobuf-net">
-            <HintPath>$(VINTAGE_STORY)/Lib/protobuf-net.dll</HintPath>
-            <Private>false</Private>
-        </Reference>
+    </ItemGroup>
+    <ItemGroup>
+        <!--
+            To get access to the IncludeEnumNamePrefix protobuf-net schema
+            generation feature, a newer version of protobuf-net is necessary
+            than what's included in Vintage Story.
+        -->
+        <PackageReference Include="protobuf-net" Version="3.2.42" />
     </ItemGroup>
 
     <!--

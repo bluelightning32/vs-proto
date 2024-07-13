@@ -21,7 +21,8 @@ public class AddVintageStoryPath {
     string vsDir = Environment.GetEnvironmentVariable("VINTAGE_STORY");
     if (vsDir == null) {
       Console.Error.WriteLine(
-          "Warning: the VINTAGE_STORY environmental variable is unset. The program likely be unable to load the Vintagestory dlls.");
+          "Warning: the VINTAGE_STORY environmental variable is unset. The " +
+          "program likely be unable to load the Vintagestory dlls.");
       return null;
     }
     string assemblyFile = Path.Combine(

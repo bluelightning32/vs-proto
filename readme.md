@@ -7,6 +7,16 @@ applications.
 A Visual Studio Code workspace is included. The program can be built through it or
 from the command line.
 
+The 3.2.42 version of protobuf-net is required. This is newer than what's
+included in Vintage Story, and it is newer than what is currently available
+from NuGet. So before building or running the program, the
+[package](https://www.myget.org/feed/protobuf-net/package/nuget/protobuf-net)
+must be installed from MyGet. The following command will install the package in
+the local NuGet package cache.
+```
+dotnet add package protobuf-net --version 3.2.42 --source https://www.myget.org/F/protobuf-net/api/v3/index.json
+```
+
 The `VINTAGE_STORY` environment variable must be set before building the
 program, running the program, or even before loading the project in VSCode. It
 should be set to the install location of Vintage Story (the directory that
