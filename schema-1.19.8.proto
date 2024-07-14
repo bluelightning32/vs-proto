@@ -1,0 +1,195 @@
+syntax = "proto2";
+
+message BlockPos {
+   optional int32 X = 1 [default = 0];
+   optional int32 InternalY = 2 [default = 0];
+   optional int32 Z = 3 [default = 0];
+}
+message Cuboidi {
+   optional int32 X1 = 1 [default = 0];
+   optional int32 Y1 = 2 [default = 0];
+   optional int32 Z1 = 3 [default = 0];
+   optional int32 X2 = 4 [default = 0];
+   optional int32 Y2 = 5 [default = 0];
+   optional int32 Z2 = 6 [default = 0];
+}
+enum EnumBlockAccessFlags {
+   // this is a composite/flags enumeration
+   EnumBlockAccessFlags_None = 0;
+   EnumBlockAccessFlags_BuildOrBreak = 1;
+   EnumBlockAccessFlags_Use = 2;
+}
+enum EnumFreeMovAxisLock {
+   EnumFreeMovAxisLock_None = 0;
+   EnumFreeMovAxisLock_X = 1;
+   EnumFreeMovAxisLock_Y = 2;
+   EnumFreeMovAxisLock_Z = 3;
+}
+enum EnumGameMode {
+   EnumGameMode_Guest = 0;
+   EnumGameMode_Survival = 1;
+   EnumGameMode_Creative = 2;
+   EnumGameMode_Spectator = 3;
+}
+enum EnumPlayStyle {
+   EnumPlayStyle_WildernessSurvival = 0;
+   EnumPlayStyle_SurviveAndBuild = 1;
+   EnumPlayStyle_SurviveAndAutomate = 2;
+   EnumPlayStyle_CreativeBuilding = 3;
+}
+message GeneratedStructure {
+   optional string Code = 1;
+   optional string Group = 2;
+   optional Cuboidi Location = 3;
+   optional bool SuppressRivulets = 4 [default = false];
+   optional bool SuppressTreesAndShrubs = 5 [default = false];
+}
+message IntDataMap2D {
+   repeated int32 Data = 1 [packed = true];
+   optional int32 Size = 2 [default = 0];
+   optional int32 TopLeftPadding = 3 [default = 0];
+   optional int32 BottomRightPadding = 4 [default = 0];
+}
+message KeyValuePair_Vec2i_Single {
+   optional Vec2i Key = 1;
+   optional float Value = 2;
+}
+message LandClaim {
+   repeated Cuboidi Areas = 1;
+   optional int32 ProtectionLevel = 2 [default = 0];
+   optional int64 OwnedByEntityId = 3 [default = 0];
+   optional string OwnedByPlayerUid = 4;
+   optional uint32 OwnedByPlayerGroupUid = 5 [default = 0];
+   optional string LastKnownOwnerName = 6;
+   optional string Description = 7;
+   map<int32,EnumBlockAccessFlags> PermittedPlayerGroupIds = 8;
+   map<string,EnumBlockAccessFlags> PermittedPlayerUids = 9;
+   map<string,string> PermittedPlayerLastKnownPlayerName = 10;
+   optional bool AllowUseEveryone = 11 [default = false];
+}
+message MapPieceDB {
+   repeated int32 Pixels = 1;
+}
+message PlayerSpawnPos {
+   optional int32 x = 1 [default = 0];
+   optional int32 y = 2;
+   optional int32 z = 3 [default = 0];
+   optional float yaw = 4;
+   optional float pitch = 5;
+   optional float roll = 6;
+   optional int32 RemainingUses = 7 [default = 0];
+}
+message SaveGame {
+   optional int32 MapSizeX = 1 [default = 0];
+   optional int32 MapSizeY = 2 [default = 0];
+   optional int32 MapSizeZ = 3 [default = 0];
+   map<string,ServerWorldPlayerData> PlayerDataByUID = 4;
+   optional int32 Seed = 7 [default = 0];
+   optional int64 SimulationCurrentFrame = 8 [default = 0];
+   optional int64 LastEntityId = 10 [default = 0];
+   map<string,bytes> ModData = 11;
+   optional int64 TotalGameSeconds = 12 [default = 0];
+   optional string WorldName = 13;
+   optional int32 TotalSecondsPlayed = 14 [default = 0];
+   optional EnumPlayStyle WorldPlayStyle = 16 [default = EnumPlayStyle_WildernessSurvival];
+   optional string LastPlayed = 17;
+   optional string CreatedGameVersion = 18;
+   optional int32 GameTimeSpeed = 19 [default = 0];
+   optional int32 MiniDimensionsCreated = 20 [default = 0];
+   optional string LastSavedGameVersion = 21;
+   optional string CreatedByPlayerName = 22;
+   optional bool EntitySpawning = 23 [default = false];
+   optional float HoursPerDay = 25 [default = 0];
+   optional int64 LastHerdId = 26 [default = 0];
+   repeated LandClaim LandClaims = 27;
+   map<string,float> TimeSpeedModifiers = 28;
+   optional string PlayStyle = 29;
+   optional string WorldType = 30;
+   optional bytes WorldConfigBytes = 31;
+   optional string PlayStyleLangCode = 32;
+   optional int32 LastBlockItemMappingVersion = 33 [default = 0];
+   optional string SavegameIdentifier = 34;
+   optional float CalendarSpeedMul = 35 [default = 0];
+   map<string,bool> RemappingsAppliedByCode = 36;
+   optional int32 HighestChunkdataVersion = 37 [default = 0];
+   optional int64 TotalGameSecondsStart = 38 [default = 0];
+   optional int32 CreatedWorldGenVersion = 39 [default = 0];
+}
+message ServerChunk {
+   optional bytes blocksCompressed = 1;
+   optional bytes lightCompressed = 2;
+   optional bytes lightSatCompressed = 3;
+   optional int32 EntitiesCount = 5 [default = 0];
+   repeated bytes EntitiesSerialized = 6;
+   optional int32 BlockEntitiesCount = 7 [default = 0];
+   repeated bytes BlockEntitiesSerialized = 8;
+   map<string,bytes> moddata = 9;
+   repeated int32 lightPositions = 10;
+   map<string,bytes> ServerSideModdata = 11;
+   optional string GameVersionCreated = 12;
+   optional bool EmptyBeforeSave = 13 [default = false];
+   optional bytes DecorsSerialized = 14;
+   optional int32 savedCompressionVersion = 15 [default = 0];
+   optional bytes liquidsCompressed = 16;
+   optional int32 BlocksPlaced = 17 [default = 0];
+   optional int32 BlocksRemoved = 18 [default = 0];
+}
+message ServerMapChunk {
+   map<string,bytes> Moddata = 1;
+   repeated uint32 RainHeightMap = 3;
+   optional int32 currentpass = 4 [default = 0];
+   repeated uint32 TopRockIdMapOld = 6;
+   repeated uint32 WorldGenTerrainHeightMap = 7;
+   repeated BlockPos ScheduledBlockUpdates = 8;
+   repeated BlockPos NewBlockEntities = 9;
+   optional uint32 YMax = 10 [default = 0];
+   optional bytes CaveHeightDistort = 11;
+   repeated uint32 SedimentaryThicknessMap = 12;
+   repeated int32 TopRockIdMap = 13;
+   repeated KeyValuePair_Vec2i_Single SnowAccum = 15;
+   optional int32 WorldGenVersion = 16 [default = 0];
+}
+message ServerMapRegion {
+   optional IntDataMap2D LandformMap = 1;
+   optional IntDataMap2D ForestMap = 2;
+   optional IntDataMap2D ClimateMap = 3;
+   optional IntDataMap2D GeologicProvinceMap = 4;
+   optional IntDataMap2D BushMap = 5;
+   optional IntDataMap2D FlowerMap = 6;
+   map<string,IntDataMap2D> OreMaps = 8;
+   map<string,bytes> ModData = 9;
+   map<string,IntDataMap2D> ModMaps = 10;
+   repeated GeneratedStructure GeneratedStructures = 11;
+   repeated IntDataMap2D RockStrata = 12;
+   optional IntDataMap2D OreMapVerticalDistortTop = 13;
+   optional IntDataMap2D OreMapVerticalDistortBottom = 14;
+   optional IntDataMap2D BeachMap = 15;
+   map<string,IntDataMap2D> BlockPatchMaps = 16;
+   optional IntDataMap2D UpheavelMap = 17;
+   optional IntDataMap2D OceanMap = 18;
+}
+message ServerWorldPlayerData {
+   optional string PlayerUID = 1;
+   map<string,bytes> inventoriesSerialized = 2;
+   optional bytes EntityPlayerSerialized = 3;
+   optional EnumGameMode GameMode = 4 [default = EnumGameMode_Guest];
+   optional float MoveSpeedMultiplier = 5 [default = 0];
+   optional bool FreeMove = 6 [default = false];
+   optional bool NoClip = 7 [default = false];
+   optional int32 Viewdistance = 8 [default = 0];
+   optional int32 selectedHotbarslot = 9 [default = 0];
+   optional EnumFreeMovAxisLock freeMovePlaneLock = 10 [default = EnumFreeMovAxisLock_None];
+   optional float PickingRange = 11 [default = 0];
+   optional bool areaSelectionMode = 12 [default = false];
+   optional bool didSelectSkin = 13 [default = false];
+   optional PlayerSpawnPos spawnPosition = 14;
+   map<string,bytes> ModData = 15;
+   optional float PreviousPickingRange = 16 [default = 0];
+   optional int32 Deaths = 17 [default = 0];
+   optional bool RenderMetaBlocks = 18 [default = false];
+}
+message Vec2i {
+   optional int32 X = 1 [default = 0];
+   optional int32 Y = 2 [default = 0];
+}
+
