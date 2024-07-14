@@ -35,3 +35,8 @@ V2 syntax.
 ```
 dotnet run -- Vintagestory.Server.ServerChunk >schema.proto
 ```
+
+# Pregenerated schema
+
+The schema-1.19.8.proto file in the source tree contains the schema of the
+default types extracted from Vintage Story version 1.19.8.
