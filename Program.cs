@@ -47,7 +47,11 @@ class Program {
     }
     if (options.Types.Count == 0) {
       options.Types.Add(typeof(Vintagestory.Server.ServerChunk));
+      options.Types.Add(typeof(Vintagestory.Server.ServerMapChunk));
+      options.Types.Add(typeof(Vintagestory.Server.ServerMapRegion));
       options.Types.Add(typeof(SaveGame));
+      options.Types.Add(typeof(Vintagestory.Server.ServerWorldPlayerData));
+      options.Types.Add(typeof(Vintagestory.GameContent.MapPieceDB));
     }
 
     string schema = model.GetSchema(options);

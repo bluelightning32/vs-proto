@@ -10,12 +10,14 @@ public class AddVintageStoryPath {
 
   [ModuleInitializer]
   internal static void ModuleInitialize() {
-    _assemblyResolveDelegate = new ResolveEventHandler(
+    s_assemblyResolveDelegate = new ResolveEventHandler(
         (sender, args) => LoadFromVintageStory(sender, args));
-    AppDomain.CurrentDomain.AssemblyResolve += _assemblyResolveDelegate;
+    AppDomain.CurrentDomain.AssemblyResolve += s_assemblyResolveDelegate;
   }
 
-  static ResolveEventHandler _assemblyResolveDelegate = null;
+  static ResolveEventHandler s_assemblyResolveDelegate = null;
+
+  static readonly string[] SearchSubDirs = new string[] { "", "Lib", "Mods" };
 
   static Assembly LoadFromVintageStory(object sender, ResolveEventArgs args) {
     string vsDir = Environment.GetEnvironmentVariable("VINTAGE_STORY");
@@ -25,16 +27,14 @@ public class AddVintageStoryPath {
           "program likely be unable to load the Vintagestory dlls.");
       return null;
     }
-    string assemblyFile = Path.Combine(
-        vsDir, Path.ChangeExtension(new AssemblyName(args.Name).Name, ".dll"));
-    if (!File.Exists(assemblyFile)) {
-      assemblyFile = Path.Combine(
-          vsDir, "Lib",
+    foreach (string subdir in SearchSubDirs) {
+      string assemblyFile = Path.Combine(
+          vsDir, subdir,
           Path.ChangeExtension(new AssemblyName(args.Name).Name, ".dll"));
-      if (!File.Exists(assemblyFile)) {
-        return null;
+      if (File.Exists(assemblyFile)) {
+        return Assembly.LoadFrom(assemblyFile);
       }
     }
-    return Assembly.LoadFrom(assemblyFile);
+    return null;
   }
 }
