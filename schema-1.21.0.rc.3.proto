@@ -18,6 +18,7 @@ enum EnumBlockAccessFlags {
    EnumBlockAccessFlags_None = 0;
    EnumBlockAccessFlags_BuildOrBreak = 1;
    EnumBlockAccessFlags_Use = 2;
+   EnumBlockAccessFlags_Traverse = 4;
 }
 enum EnumFreeMovAxisLock {
    EnumFreeMovAxisLock_None = 0;
@@ -66,6 +67,7 @@ message LandClaim {
    map<string,EnumBlockAccessFlags> PermittedPlayerUids = 9;
    map<string,string> PermittedPlayerLastKnownPlayerName = 10;
    optional bool AllowUseEveryone = 11 [default = false];
+   optional bool AllowTraverseEveryone = 12 [default = false];
 }
 message MapPieceDB {
    repeated int32 Pixels = 1;
@@ -114,6 +116,7 @@ message SaveGame {
    optional int32 HighestChunkdataVersion = 37 [default = 0];
    optional int64 TotalGameSecondsStart = 38 [default = 0];
    optional int32 CreatedWorldGenVersion = 39 [default = 0];
+   optional PlayerSpawnPos DefaultSpawn = 40;
 }
 message ServerChunk {
    optional bytes blocksCompressed = 1;
@@ -148,6 +151,7 @@ message ServerMapChunk {
    repeated int32 TopRockIdMap = 13;
    repeated KeyValuePair_Vec2i_Single SnowAccum = 15;
    optional int32 WorldGenVersion = 16 [default = 0];
+   repeated Vec4i ScheduledBlockLightUpdates = 17;
 }
 message ServerMapRegion {
    optional IntDataMap2D LandformMap = 1;
@@ -191,5 +195,11 @@ message ServerWorldPlayerData {
 message Vec2i {
    optional int32 X = 1 [default = 0];
    optional int32 Y = 2 [default = 0];
+}
+message Vec4i {
+   optional int32 X = 1 [default = 0];
+   optional int32 Y = 2 [default = 0];
+   optional int32 Z = 3 [default = 0];
+   optional int32 W = 4 [default = 0];
 }
 

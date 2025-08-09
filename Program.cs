@@ -56,8 +56,8 @@ class Program {
 
     string schema = model.GetSchema(options);
     // Protobuf-net version 3.2.42 added the IncludeEnumNamePrefix flag.
-    // However, it still does not prepend the enum name for default values. Use
-    // a regex to look for lines like this:
+    // However, even version 3.2.56 still does not prepend the enum name for
+    // default values. Use a regex to look for lines like this:
     //    optional EnumFreeMovAxisLock freeMovePlaneLock = 10 [default = None];
     // And replace them with lines like this:
     //    optional EnumFreeMovAxisLock freeMovePlaneLock = 10 [default =

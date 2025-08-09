@@ -27,10 +27,10 @@ public class AddVintageStoryPath {
           "program likely be unable to load the Vintagestory dlls.");
       return null;
     }
+    string filename = new AssemblyName(args.Name).Name + ".dll";
     foreach (string subdir in SearchSubDirs) {
       string assemblyFile = Path.Combine(
-          vsDir, subdir,
-          Path.ChangeExtension(new AssemblyName(args.Name).Name, ".dll"));
+          vsDir, subdir, filename);
       if (File.Exists(assemblyFile)) {
         return Assembly.LoadFrom(assemblyFile);
       }

@@ -10,7 +10,7 @@
 
             https://learn.microsoft.com/en-us/dotnet/core/project-sdk/msbuild-props#targetframework
         -->
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <!--
             Generate an executable dll. Note that this still produces a dll file
 
@@ -63,7 +63,7 @@
             generation feature, a newer version of protobuf-net is necessary
             than what's included in Vintage Story.
         -->
-        <PackageReference Include="protobuf-net" Version="3.2.42" />
+        <PackageReference Include="protobuf-net" Version="3.2.56" />
     </ItemGroup>
 
     <!--
